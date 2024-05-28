@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "868162463720",
+    "project_id": "fp-ppb-2024",
+    "storage_bucket": "fp-ppb-2024.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:868162463720:android:6be80f0437a99d56b5265d",
+        "android_client_info": {
+          "package_name": "com.example.fpppb2024"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-xxNHZR0RcURfUmOXUQOEeTEKvqzCVcU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
