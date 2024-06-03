@@ -73,7 +73,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      // backgroundColor: Colors.grey[300],
       body: SafeArea(
           child: Center(
               child: SingleChildScrollView(
@@ -81,8 +81,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   children: [
                     // logo
                     Icon(
-                      Icons.lock,
+                      CupertinoIcons.money_dollar_circle,
                       size: 100,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
 
                     const SizedBox(height: 50),
