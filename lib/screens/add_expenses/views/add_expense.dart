@@ -19,6 +19,7 @@ class _AddExpenseState extends State<AddExpense> {
   TextEditingController expenseController = TextEditingController();
   TextEditingController categoryController = TextEditingController();
   TextEditingController dateController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
   final FireStoreExpenseService fireStoreExpenseService = FireStoreExpenseService();
   DateTime selectedDate = DateTime.now();
   final user = FirebaseAuth.instance.currentUser!;
@@ -104,8 +105,27 @@ class _AddExpenseState extends State<AddExpense> {
                 ),
                 controller: categoryController,
               ),
+
               SizedBox(height: 16,),
 
+              // deskripsi
+              TextFormField(
+                textAlignVertical: TextAlignVertical.center,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(FontAwesomeIcons.noteSticky),
+                  filled: true,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    // borderSide: BorderSide.none
+                  ),
+                  label: const Text(
+                      'Description'
+                  ),
+                ),
+                controller: descriptionController,
+              ),
+
+              SizedBox(height: 16,),
               // Pick Date
               TextFormField(
                 readOnly: true,
@@ -147,6 +167,7 @@ class _AddExpenseState extends State<AddExpense> {
                       userId: user.uid,
                       expenseId: '' , // will be returned
                       category: categoryController.text,
+                      description: descriptionController.text,
                       amount: int.parse(expenseController.text),
                       date: DateFormat('dd/MM/yyyy').parse(dateController.text),
                       created: DateTime.now(),

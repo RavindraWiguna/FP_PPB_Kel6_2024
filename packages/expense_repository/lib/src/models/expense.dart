@@ -4,6 +4,7 @@ class ExpenseFields {
     userId,
     expenseId,
     category,
+    description,
     date,
     amount,
     created,
@@ -12,6 +13,7 @@ class ExpenseFields {
 
   static final String userId = 'userId';
   static final String expenseId = 'expenseId';
+  static final String description = 'description';
   static final String category = 'category';
   static final String date = 'date';
   static final String amount = 'amount';
@@ -24,6 +26,7 @@ class Expense {
   String userId;
   String expenseId;
   String category;
+  String description;
   DateTime date;
   int amount; // 2^63 ish ~10^18 ish should be aman
   DateTime created;
@@ -34,6 +37,7 @@ class Expense {
     required this.userId,
     required this.expenseId,
     required this.category,
+    required this.description,
     required this.date,
     required this.amount,
     required this.created,
@@ -44,6 +48,7 @@ class Expense {
     String? userId,
     String? expenseId,
     String? category,
+    String? description,
     DateTime? date,
     int? amount,
     DateTime? created,
@@ -53,6 +58,7 @@ class Expense {
         userId: userId?? this.userId,
         expenseId: expenseId ?? this.expenseId,
         category: category ?? this.category,
+        description: description?? this.description,
         date: date ?? this.date,
         amount: amount?? this.amount,
         created: created?? this.created,
@@ -63,6 +69,7 @@ class Expense {
     userId: '',
     expenseId: '',
     category: '',
+    description: '',
     date: DateTime.now(),
     amount: 0,
     created: DateTime.now(),
@@ -74,6 +81,7 @@ class Expense {
     Map<String, Object?> myJson = {
       ExpenseFields.userId: userId,
       ExpenseFields.category: category,
+      ExpenseFields.description: description,
       ExpenseFields.date: date.toIso8601String(),
       ExpenseFields.amount: amount,
       ExpenseFields.created: created.toIso8601String(),
@@ -85,10 +93,11 @@ class Expense {
     return myJson;
   }
 
-  static Expense fromJson(Map<String, Object?> json) => Expense(
+  static Expense fromDynamic(dynamic json) => Expense(
     userId: json[ExpenseFields.userId] as String,
     expenseId: json[ExpenseFields.expenseId] as String, // i guess u still need it
     category: json[ExpenseFields.category] as String,
+    description: json[ExpenseFields.description] as String,
     date: DateTime.parse(json[ExpenseFields.date] as String),
     amount: json[ExpenseFields.amount] as int,
     created: DateTime.parse(json[ExpenseFields.created] as String),

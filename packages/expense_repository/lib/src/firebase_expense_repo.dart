@@ -8,14 +8,16 @@ class FireStoreExpenseService{
   // create
   Future<void> addExpense(Expense expenseLocal){
     print(expenseLocal.toJson(true));
-    return expenseCollection.add(expenseLocal.toJson(false));
+    return expenseCollection.add(expenseLocal.toJson(true));
   }
 
   // read
-  Stream<QuerySnapshot> getExpenseStream(String userId){
+  Stream<QuerySnapshot> getLastNExpense(String userId, int n){
+    print(userId);
     final expenseStream = expenseCollection.
     where(ExpenseFields.userId, isEqualTo: userId).
     orderBy('date', descending: true).
+    limit(n).
     snapshots();
     return expenseStream;
   }
