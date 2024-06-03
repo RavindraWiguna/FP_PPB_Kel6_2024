@@ -1,4 +1,4 @@
-import 'package:fpppb2024/pages/login_or_register.dart';
+import 'package:fpppb2024/auths/login_or_register.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fpppb2024/screens/home/views/home_screen.dart';

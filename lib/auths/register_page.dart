@@ -1,40 +1,47 @@
 import 'package:fpppb2024/components/my_button.dart';
 import 'package:fpppb2024/components/my_textfield.dart';
-import 'package:fpppb2024/components/square_title.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatefulWidget {
+class RegisterPage extends StatefulWidget {
   Function()? onTap;
-  LoginPage({
+  RegisterPage({
     super.key,
     required this.onTap
   });
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final emailController = TextEditingController();
-
   final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
 
-  void signUserIn() async{
+  void signUserUp() async{
     // show loading
     showDialog(
-      context: context,
-      builder: (context){
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      }
+        context: context,
+        builder: (context){
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
     );
+
+    // check pass and confirm pass same
+    if(confirmPasswordController.text != passwordController.text){
+      Navigator.pop(context);
+      errorMessageBox('Password missmatch');
+
+      return;
+    }
 
     // try signin in
     try{
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: emailController.text,
           password: passwordController.text
       );
@@ -42,24 +49,7 @@ class _LoginPageState extends State<LoginPage> {
     }
     on FirebaseAuthException catch (e){
       Navigator.pop(context);
-
-      if(e.code == 'user-not-found'){
-        // debugPrint('no user found for that email');
-        errorMessageBox('User is not on our database');
-      }
-      else if(e.code == 'wrong-password'){
-        // debugPrint('wrong password mate');
-        // wrongPasswordMessage();
-        errorMessageBox('You put a wrong password..., shame');
-      }
-      else if(e.code == 'invalid-credential'){
-        // invalidCredentialMessage();
-        errorMessageBox('Email or Password is wrong, wont tell which one you hacker');
-      }
-      else{
-        // unKnownErrorMessage(e.code);
-        errorMessageBox('We didnt handle this, here is the error: ' + e.code);
-      }
+      errorMessageBox(e.code);
     }
 
   }
@@ -70,12 +60,12 @@ class _LoginPageState extends State<LoginPage> {
 
   void errorMessageBox(String msg){
     showDialog(
-      context: context,
-      builder: (context){
-        return AlertDialog(
-          title: Text(msg),
-        );
-      }
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            title: Text(msg),
+          );
+        }
     );
   }
 
@@ -83,6 +73,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       // backgroundColor: Colors.grey[300],
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: SafeArea(
           child: Center(
               child: SingleChildScrollView(
@@ -94,66 +85,57 @@ class _LoginPageState extends State<LoginPage> {
                       size: 100,
                       color: Theme.of(context).colorScheme.primary,
                     ),
-                
+
                     const SizedBox(height: 50),
-                
+
                     // welcome back
                     Text(
-                      'Welcome back you\'ve been missed!',
+                      'Welcome new user, let register yourself!',
                       style: TextStyle(
                         color: Colors.grey[700],
                         fontSize: 16,
                       ),
                     ),
-                
+
                     const SizedBox(height:25),
-                
+
                     // username textfield
                     MyTextField(
                       controller: emailController,
                       isObscureText: false,
                       hintText: "Username",
                     ),
-                
+
                     SizedBox(height:10),
-                
+
                     // password textfield
                     MyTextField(
                       controller: passwordController,
                       isObscureText: true,
                       hintText: "Password",
                     ),
-                
+
                     SizedBox(height:10),
-                
-                    // forgot password?
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 25),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text(
-                            'Forgot Password ?',
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ],
-                      ),
+
+                    // password textfield
+                    MyTextField(
+                      controller: confirmPasswordController,
+                      isObscureText: true,
+                      hintText: "Confirm Password",
                     ),
-                
+
                     SizedBox(height:10),
-                
+
                     // sign in buton
                     MyButton(
-                      buttonText: 'Sign In',
+                      buttonText: 'Register',
                       onTap: (){
-                        signUserIn();
+                        signUserUp();
                       },
                     ),
-                
+
                     const SizedBox(height: 30),
-                
+
                     // or continue with
                     Row(
                       children: [
@@ -163,51 +145,51 @@ class _LoginPageState extends State<LoginPage> {
                             color: Colors.grey[400],
                           ),
                         ),
-                
+
                         Text(
                           'Or Continue With',
                           style: TextStyle(
                             color: Colors.grey[700],
-                
+
                           ),
                         ),
-                
+
                         Expanded(
                           child: Divider(
                             thickness: 0.5,
                             color: Colors.grey[400],
                           ),
                         )
-                
+
                       ],
                     ),
-                
+
                     const SizedBox(height:30),
-                
+
                     // not a member register now
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Not a member? ',
+                          'Already have an account? ',
                           style: TextStyle(
-                            color: Colors.grey[700]
+                              color: Colors.grey[700]
                           ),
                         ),
-                
+
                         GestureDetector(
                           onTap: widget.onTap,
                           child: Text(
-                            'Register now',
+                            'Login now',
                             style: TextStyle(
-                              color: Colors.blue[600]
+                                color: Colors.blue[600]
                             ),
                           ),
                         )
                       ],
                     )
-                
-                
+
+
                   ],
                 ),
               )

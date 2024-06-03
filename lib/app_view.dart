@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fpppb2024/pages/auth_page.dart';
-import 'package:fpppb2024/screens/home/views/home_screen.dart';
+import 'package:fpppb2024/auths/auth_page.dart';
 
 class MyAppView extends StatelessWidget {
 

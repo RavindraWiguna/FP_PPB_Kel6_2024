@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -106,7 +105,7 @@ class MainScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   const Text(
-                    '\$ 4800.00',
+                    'Rp4.800.000',
                     style: TextStyle(
                         fontSize: 40,
                         color: Colors.white,
@@ -148,7 +147,7 @@ class MainScreen extends StatelessWidget {
                                   ),
                                 ),
                                 Text(
-                                  '€ 2500.00',
+                                  'Rp2.500.000',
                                   style: TextStyle(
                                       fontSize: 14,
                                       color: Colors.white,
@@ -189,7 +188,7 @@ class MainScreen extends StatelessWidget {
                                   ),
                                 ),
                                 Text(
-                                  '€ 800.00',
+                                  'Rp800.000',
                                   style: TextStyle(
                                       fontSize: 14,
                                       color: Colors.white,
@@ -285,7 +284,7 @@ class MainScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Text(
-                                    "\$50.000", // for now,
+                                    "Rp50.000", // for now,
                                     style: TextStyle(
                                         fontSize: 14,
                                         color: Theme.of(context).colorScheme.onBackground,
