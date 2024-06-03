@@ -2,11 +2,13 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 
 class MainScreen extends StatelessWidget {
   MainScreen({super.key});
 
   final user = FirebaseAuth.instance.currentUser!;
+  final String currentDate = DateFormat('dd - MM - yyyy').format(DateTime.now());
 
   void signUserOut(){
     FirebaseAuth.instance.signOut();
@@ -60,9 +62,8 @@ class MainScreen extends StatelessWidget {
                             color: Theme.of(context).colorScheme.outline,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ],
@@ -70,7 +71,16 @@ class MainScreen extends StatelessWidget {
                 IconButton(onPressed: signUserOut, icon: const Icon(Icons.logout))
               ],
             ),
-            const SizedBox(height: 20,),
+            const SizedBox(height: 10),  // Add some space between email and date
+            Text(
+              currentDate,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.outline,
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            const SizedBox(height: 10,),
             Container(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.width / 2,
