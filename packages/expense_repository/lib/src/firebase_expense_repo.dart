@@ -24,11 +24,11 @@ class FireStoreExpenseService{
 
   // update
   Future<void> updateExpense(Expense expenseUpdated){
-    return expenseCollection.doc(expenseUpdated.expenseId).update(expenseUpdated.toJson(false));
+    return expenseCollection.doc(expenseUpdated.expenseId).update(expenseUpdated.toJson(true));
   }
 
   // delete
-  Future<void> deleteNote(String docID){
+  Future<void> deleteExpense(String docID){
     return expenseCollection.doc(docID).delete();
   }
 

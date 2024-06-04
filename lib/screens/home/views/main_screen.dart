@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expense_repository/src/firebase_expense_repo.dart';
@@ -6,6 +5,7 @@ import 'package:expense_repository/src/models/expense.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fpppb2024/screens/expenses_detail/views/expense_detail.dart';
 import 'package:intl/intl.dart';
 
 class MainScreen extends StatelessWidget {
@@ -260,54 +260,65 @@ class MainScreen extends StatelessWidget {
                         itemCount: expenseList.length, // for now,
                         itemBuilder: (context, int i) {;
                           Expense curExpense = Expense.fromDynamic(expenseList[i]);
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 16.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12)
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        const SizedBox(width: 12),
-                                        Text(
-                                          curExpense.category, // fow now,
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: Theme.of(context).colorScheme.onBackground,
-                                              fontWeight: FontWeight.w500
+                          return GestureDetector(
+                            onTap: (){
+                              // buka detail
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) => ExpenseDetail(curExpense: curExpense, docId: expenseList[i].id,)
+                                  )
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 16.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12)
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const SizedBox(width: 12),
+                                          Text(
+                                            curExpense.category, // fow now,
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: Theme.of(context).colorScheme.onBackground,
+                                                fontWeight: FontWeight.w500
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      children: [
-                                        Text(
-                                          'Rp'+curExpense.amount.toString(), // for now,
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: Theme.of(context).colorScheme.onBackground,
-                                              fontWeight: FontWeight.w400
+                                        ],
+                                      ),
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            'Rp'+curExpense.amount.toString(), // for now,
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: Theme.of(context).colorScheme.onBackground,
+                                                fontWeight: FontWeight.w400
+                                            ),
                                           ),
-                                        ),
-                                        Text(
-                                          // DateFormat('dd/MM/yyyy').format('20/01/2024'),
-                                          '20/01/2024', // for now
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: Theme.of(context).colorScheme.outline,
-                                              fontWeight: FontWeight.w400
+                                          Text(
+                                            DateFormat('dd/MM/yyyy').format(curExpense.date),
+                                            // '20/01/2024', // for now
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: Theme.of(context).colorScheme.outline,
+                                                fontWeight: FontWeight.w400
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    )
-                                  ],
+                                        ],
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
