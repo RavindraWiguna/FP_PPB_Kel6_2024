@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:expense_repository/src/firebase_expense_repo.dart';
+import 'package:expense_repository/src/services/firebase_expense_repo.dart';
 import 'package:expense_repository/src/models/expense.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

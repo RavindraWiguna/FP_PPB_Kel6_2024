@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:expense_repository/src/models/expense.dart';
 import 'package:intl/intl.dart';
-import 'package:expense_repository/src/firebase_expense_repo.dart';
+import 'package:expense_repository/src/services/firebase_expense_repo.dart';
 
 class ExpenseDetail extends StatelessWidget {
   final Expense curExpense;

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:expense_repository/src/firebase_expense_repo.dart';
+import 'package:expense_repository/src/services/firebase_expense_repo.dart';
 import 'package:expense_repository/src/models/expense.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
