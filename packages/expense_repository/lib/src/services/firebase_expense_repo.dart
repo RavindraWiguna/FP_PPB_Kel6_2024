@@ -16,7 +16,9 @@ class FireStoreExpenseService{
     print(userId);
     final temp = expenseCollection.
     where(ExpenseFields.userId, isEqualTo: userId).
-    orderBy('date', descending: true);
+    orderBy('date', descending: true).
+    orderBy('created', descending: true)
+    ;
     final returnStream;
     if(n < 0){
       returnStream = temp.snapshots();
