@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expense_repository/src/services/firebase_expense_repo.dart';
+import 'package:expense_repository/src/services/firebase_wallet_repo.dart';
+import 'package:expense_repository/src/models/wallet.dart';
 import 'package:expense_repository/src/models/expense.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,13 +10,26 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fpppb2024/screens/expenses_detail/views/expense_detail.dart';
 import 'package:intl/intl.dart';
 
-class MainScreen extends StatelessWidget {
+class MainScreen extends StatefulWidget {
   MainScreen({super.key});
 
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  _MainScreenState createState() => _MainScreenState();
+
   final user = FirebaseAuth.instance.currentUser!;
+
   final String currentDate = DateFormat('dd - MM - yyyy').format(DateTime.now());
+
   // firestore
   final FireStoreExpenseService fireStoreExpenseService = FireStoreExpenseService();
+
+  final FireStoreWalletService fireStoreWalletService = FireStoreWalletService();
+
+  int currentBalance = 0;
 
   void signUserOut(){
     FirebaseAuth.instance.signOut();
@@ -87,140 +102,163 @@ class MainScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10,),
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.width / 2,
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Theme.of(context).colorScheme.primary,
-                      Theme.of(context).colorScheme.secondary,
-                      Theme.of(context).colorScheme.tertiary,
-                    ],
-                    transform: const GradientRotation(pi / 4),
-                  ),
-                  borderRadius: BorderRadius.circular(25),
-                  boxShadow: [
-                    BoxShadow(
-                        blurRadius: 4,
-                        color: Colors.grey.shade300,
-                        offset: const Offset(5, 5)
-                    )
-                  ]
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    'Total Balance',
-                    style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'Rp4.800.000',
-                    style: TextStyle(
-                        fontSize: 40,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 25,
-                              height: 25,
-                              decoration: const BoxDecoration(
-                                  color: Colors.white30,
-                                  shape: BoxShape.circle
-                              ),
-                              child: const Center(
-                                  child: Icon(
-                                    CupertinoIcons.arrow_up,
-                                    size: 12,
-                                    color: Colors.greenAccent,
-                                  )
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            const Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Income',
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w400
-                                  ),
-                                ),
-                                Text(
-                                  'Rp2.500.000',
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600
-                                  ),
-                                ),
-                              ],
+            StreamBuilder<QuerySnapshot>(
+              stream: fireStoreWalletService.getUserWallet(user.uid),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                }
+
+                if (snapshot.hasData  && snapshot.data!.docs.first.exists) {
+                  print('sampe sini bang');
+                  final docData = snapshot.data!.docs.first;
+                  print('Document exists: ${docData.exists}');
+                  debugPrint('wallet has data');
+                  final wallet = Wallet.fromDynamic(
+                      snapshot.data!.docs.first.data());
+                  return
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.width / 2,
+                      decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Theme.of(context).colorScheme.primary,
+                              Theme.of(context).colorScheme.secondary,
+                              Theme.of(context).colorScheme.tertiary,
+                            ],
+                            transform: const GradientRotation(pi / 4),
+                          ),
+                          borderRadius: BorderRadius.circular(25),
+                          boxShadow: [
+                            BoxShadow(
+                                blurRadius: 4,
+                                color: Colors.grey.shade300,
+                                offset: const Offset(5, 5)
                             )
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              width: 25,
-                              height: 25,
-                              decoration: const BoxDecoration(
-                                  color: Colors.white30,
-                                  shape: BoxShape.circle
-                              ),
-                              child: const Center(
-                                  child: Icon(
-                                    CupertinoIcons.arrow_down,
-                                    size: 12,
-                                    color: Colors.red,
-                                  )
-                              ),
+                          ]
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Total Balance',
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600
                             ),
-                            const SizedBox(width: 8),
-                            const Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Rp${wallet.currentBalance}',
+                            style: const TextStyle(
+                                fontSize: 36,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  'Expenses',
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w400
-                                  ),
+                                Row(
+                                  children: [
+                                    Container(
+                                      width: 25,
+                                      height: 25,
+                                      decoration: const BoxDecoration(
+                                          color: Colors.white30,
+                                          shape: BoxShape.circle
+                                      ),
+                                      child: const Center(
+                                          child: Icon(
+                                            CupertinoIcons.arrow_up,
+                                            size: 12,
+                                            color: Colors.greenAccent,
+                                          )
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'Income',
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w400
+                                          ),
+                                        ),
+                                        Text(
+                                          'Rp${wallet.totalIncome}',
+                                          style: const TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  ],
                                 ),
-                                Text(
-                                  'Rp800.000',
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600
-                                  ),
-                                ),
+                                Row(
+                                  children: [
+                                    Container(
+                                      width: 25,
+                                      height: 25,
+                                      decoration: const BoxDecoration(
+                                          color: Colors.white30,
+                                          shape: BoxShape.circle
+                                      ),
+                                      child: const Center(
+                                          child: Icon(
+                                            CupertinoIcons.arrow_down,
+                                            size: 12,
+                                            color: Colors.red,
+                                          )
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    const Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Expenses',
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w400
+                                          ),
+                                        ),
+                                        Text(
+                                          'Rp800.000',
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                )
                               ],
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                  )
-                ],
-              ),
+                            ),
+                          )
+                        ],
+                      ),
+                  );
+                }
+                else {
+                  // Handle empty data case (no documents in snapshot)
+                  return const Text('No wallet data found.'); // Or show a loading indicator
+                }
+              },
             ),
+
             const SizedBox(height: 40),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

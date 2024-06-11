@@ -4,6 +4,7 @@ class WalletFields {
     userId,
     walletId,
     currentBalance,
+    totalIncome,
     created,
     lastModified
   ];
@@ -11,6 +12,7 @@ class WalletFields {
   static final String userId = 'userId';
   static final String walletId = 'walletId';
   static final String currentBalance = 'currentBalance';
+  static final String totalIncome = 'totalIncome';
   static final String created = 'created';
   static final String lastModified = 'lastModified';
 }
@@ -20,6 +22,7 @@ class Wallet {
   String userId;
   String walletId;
   int currentBalance; // Assuming total balance is stored as an integer for consistency with 'amount' in 'Expense'
+  int totalIncome;
   DateTime created;
   DateTime lastModified;
 
@@ -27,6 +30,7 @@ class Wallet {
     required this.userId,
     required this.walletId,
     required this.currentBalance,
+    required this.totalIncome,
     required this.created,
     required this.lastModified,
   });
@@ -35,6 +39,7 @@ class Wallet {
     String? userId,
     String? walletId,
     int? currentBalance,
+    int? totalIncome,
     DateTime? created,
     DateTime? lastModified,
   }) =>
@@ -42,6 +47,7 @@ class Wallet {
         userId: userId ?? this.userId,
         walletId: walletId ?? this.walletId,
         currentBalance: currentBalance ?? this.currentBalance,
+        totalIncome: totalIncome ?? this.totalIncome,
         created: created ?? this.created,
         lastModified: lastModified ?? this.lastModified,
       );
@@ -50,6 +56,7 @@ class Wallet {
     userId: '',
     walletId: '',
     currentBalance: 0,
+    totalIncome: 0,
     created: DateTime.now(),
     lastModified: DateTime.now(),
   );
@@ -71,6 +78,7 @@ class Wallet {
     userId: json[WalletFields.userId] as String,
     walletId: json[WalletFields.walletId] as String,
     currentBalance: json[WalletFields.currentBalance] as int,
+    totalIncome: json[WalletFields.currentBalance] as int,
     created: DateTime.parse(json[WalletFields.created] as String),
     lastModified: DateTime.parse(json[WalletFields.lastModified] as String),
   );

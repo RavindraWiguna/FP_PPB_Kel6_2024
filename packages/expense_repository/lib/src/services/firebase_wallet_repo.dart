@@ -13,11 +13,11 @@ class FireStoreWalletService{
 
   // read
   Stream<QuerySnapshot> getUserWallet(String userId){
-    print(userId);
+    print(userId + '`s wallet');
     final walletStream = walletCollection.
     where(WalletFields.userId, isEqualTo: userId).
-    orderBy('date', descending: true).
     snapshots();
+    print(walletStream.first);
     return walletStream;
   }
 
