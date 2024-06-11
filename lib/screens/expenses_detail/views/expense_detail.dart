@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:expense_repository/src/models/expense.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:fpppb2024/screens/add_expenses/views/add_expense.dart';
 import 'package:intl/intl.dart';
 import 'package:expense_repository/src/services/firebase_expense_repo.dart';
 
@@ -17,13 +19,7 @@ class ExpenseDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Expense Detail'
-        ),
-      ),
-      body: Column(
+    return Column(
         children: [
           // category & tanggal
           Row(
@@ -52,60 +48,81 @@ class ExpenseDetail extends StatelessWidget {
 
           SizedBox(height: 16,),
 
-          // hapus
-          IconButton(
-              onPressed: () async{
-                bool doDelete=false;
-                await showDialog(
-                    context: context,
-                    builder: (ctx){
-                      return AlertDialog(
-                        title: Text('You want to delete this transaction?'),
-                        content: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            // buton yes
-                            TextButton(
-                                onPressed: (){
-                                  doDelete=true;
-                                  Navigator.pop(ctx);
-                                },
-                                child: Text(
-                                  'Yes',
-                                )
-                            ),
-                            TextButton(
-                                onPressed: (){
-                                  doDelete=false;
-                                  Navigator.pop(ctx);
-                                },
-                                child: Text(
-                                  'No',
-                                )
-                            ),
+          // hapus dan update
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // delete
+              IconButton(
+                  onPressed: () async{
+                    bool doDelete=false;
+                    await showDialog(
+                        context: context,
+                        builder: (ctx){
+                          return AlertDialog(
+                            title: Text('You want to delete this transaction?'),
+                            content: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                // buton yes
+                                TextButton(
+                                    onPressed: (){
+                                      doDelete=true;
+                                      Navigator.pop(ctx);
+                                    },
+                                    child: Text(
+                                      'Yes',
+                                    )
+                                ),
+                                TextButton(
+                                    onPressed: (){
+                                      doDelete=false;
+                                      Navigator.pop(ctx);
+                                    },
+                                    child: Text(
+                                      'No',
+                                    )
+                                ),
 
-                            // button no
-                          ],
-                        ),
-                      );
+                                // button no
+                              ],
+                            ),
+                          );
+                        }
+                    );
+
+                    // print('heree');
+                    // print(docId);
+                    // print(curExpense.expenseId);
+                    if(doDelete){
+
+                      fireStoreExpenseService.deleteExpense(docId);
+                      Navigator.pop(context);
                     }
-                );
 
-                // print('heree');
-                // print(docId);
-                // print(curExpense.expenseId);
-                if(doDelete){
+                  },
+                  icon: Icon(Icons.delete)
+              ),
 
-                  fireStoreExpenseService.deleteExpense(docId);
-                  Navigator.pop(context);
-                }
+              SizedBox(width: 10,),
 
-              },
-              icon: Icon(Icons.delete)
+              // update
+              IconButton(
+                  onPressed: () {
+                    // go to add expense
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => AddEditExpense(expense: curExpense, docID: docId,)
+                        )
+                    );
+                  },
+                  icon: Icon(FontAwesomeIcons.penToSquare)
+              ),
+            ],
           ),
 
         ],
-      ),
-    );
+      );
   }
 }

@@ -5,7 +5,7 @@ import 'package:expense_repository/src/models/expense.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fpppb2024/screens/expenses_detail/views/expense_detail.dart';
+import 'package:fpppb2024/screens/expenses_detail/views/expense_detail_dynamic.dart';
 import 'package:intl/intl.dart';
 
 class MainScreen extends StatelessWidget {
@@ -266,7 +266,7 @@ class MainScreen extends StatelessWidget {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (BuildContext context) => ExpenseDetail(curExpense: curExpense, docId: expenseList[i].id,)
+                                      builder: (BuildContext context) => ExpenseDetailDynamic(docId: expenseList[i].id,)
                                   )
                               );
                             },

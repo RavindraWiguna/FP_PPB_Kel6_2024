@@ -14,17 +14,30 @@ class FireStoreExpenseService{
   // read
   Stream<QuerySnapshot> getLastNExpense(String userId, int n){
     print(userId);
-    final expenseStream = expenseCollection.
+    final temp = expenseCollection.
     where(ExpenseFields.userId, isEqualTo: userId).
-    orderBy('date', descending: true).
-    limit(n).
-    snapshots();
-    return expenseStream;
+    orderBy('date', descending: true);
+    final returnStream;
+    if(n < 0){
+      returnStream = temp.snapshots();
+    }else {
+      returnStream = temp.limit(n).snapshots();
+    }
+    return returnStream;
   }
 
+  // read
+  Stream<DocumentSnapshot> readExpenseStream(String docID){
+    // print(userId);
+    final chosenExpense = expenseCollection.doc(docID).snapshots();
+    // if(chosenExpense.data!.data[0])
+    return chosenExpense;
+  }
+
+
   // update
-  Future<void> updateExpense(Expense expenseUpdated){
-    return expenseCollection.doc(expenseUpdated.expenseId).update(expenseUpdated.toJson(true));
+  Future<void> updateExpense(Expense expenseUpdated, String docID){
+    return expenseCollection.doc(docID).update(expenseUpdated.toJson(true));
   }
 
   // delete
