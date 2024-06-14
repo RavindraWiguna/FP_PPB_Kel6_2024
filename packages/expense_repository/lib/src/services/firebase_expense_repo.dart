@@ -47,4 +47,20 @@ class FireStoreExpenseService{
     return expenseCollection.doc(docID).delete();
   }
 
+  // count total expenses
+  Future<int> getTotalExpense(String startDate, String endDate, String userId) async{
+    int totalExpense = 0;
+    QuerySnapshot something = await expenseCollection.
+    where(ExpenseFields.userId, isEqualTo: userId).
+    where(ExpenseFields.date, isGreaterThanOrEqualTo: startDate).
+    where(ExpenseFields.date, isLessThanOrEqualTo: endDate).
+    orderBy(ExpenseFields.date, descending: true).
+    get();
+
+    for(var expense in something.docs){
+      totalExpense+= expense['amount'] as int;
+    }
+    return totalExpense;
+  }
+
 }
