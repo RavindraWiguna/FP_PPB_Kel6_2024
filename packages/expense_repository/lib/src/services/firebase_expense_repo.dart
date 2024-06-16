@@ -7,19 +7,19 @@ class FireStoreExpenseService{
 
   // create
   Future<void> addExpense(Expense expenseLocal){
-    print(expenseLocal.toJson(true));
+    // print(expenseLocal.toJson(true));
     return expenseCollection.add(expenseLocal.toJson(true));
   }
 
   // read
   Stream<QuerySnapshot> getLastNExpense(String userId, int n){
-    print(userId);
+    // print(userId);
     final temp = expenseCollection.
     where(ExpenseFields.userId, isEqualTo: userId).
     orderBy('date', descending: true).
     orderBy('created', descending: true)
     ;
-    final returnStream;
+    final Stream<QuerySnapshot<Object?>> returnStream;
     if(n < 0){
       returnStream = temp.snapshots();
     }else {
@@ -28,7 +28,7 @@ class FireStoreExpenseService{
     return returnStream;
   }
 
-  // read
+  // read ( utk bagian detail expense )
   Stream<DocumentSnapshot> readExpenseStream(String docID){
     // print(userId);
     final chosenExpense = expenseCollection.doc(docID).snapshots();
@@ -47,20 +47,15 @@ class FireStoreExpenseService{
     return expenseCollection.doc(docID).delete();
   }
 
-  // count total expenses
-  Future<int> getTotalExpense(String startDate, String endDate, String userId) async{
-    int totalExpense = 0;
-    QuerySnapshot something = await expenseCollection.
+  Stream<QuerySnapshot> getExpenseFromDateRange(String startDate, String endDate, String userId) {
+    final expenseInDateRange = expenseCollection.
     where(ExpenseFields.userId, isEqualTo: userId).
     where(ExpenseFields.date, isGreaterThanOrEqualTo: startDate).
     where(ExpenseFields.date, isLessThanOrEqualTo: endDate).
     orderBy(ExpenseFields.date, descending: true).
-    get();
+    snapshots();
 
-    for(var expense in something.docs){
-      totalExpense+= expense['amount'] as int;
-    }
-    return totalExpense;
+    return expenseInDateRange;
   }
 
 }

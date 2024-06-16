@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fpppb2024/screens/total_expenses/views/total_expenses_stream.dart';
 import 'package:fpppb2024/screens/transaction_all/views/transaction_all_page.dart';
 import 'package:fpppb2024/screens/transaction_all/views/transaction_stream.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,7 +20,8 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   final user = FirebaseAuth.instance.currentUser!;
 
-  final String currentDate = DateFormat('dd - MM - yyyy').format(DateTime.now());
+  final DateTime exactlyNow = DateTime.now();
+  final String currentDate = DateFormat('dd - MM - yyyy').format(DateTime.now()); // can't access exactly now di inisialisasi
 
   final FireStoreWalletService fireStoreWalletService = FireStoreWalletService();
 
@@ -216,7 +218,7 @@ class _MainScreenState extends State<MainScreen> {
                                       ),
                                     ),
                                     const SizedBox(width: 8),
-                                    const Column(
+                                    Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
@@ -227,13 +229,10 @@ class _MainScreenState extends State<MainScreen> {
                                               fontWeight: FontWeight.w400
                                           ),
                                         ),
-                                        Text(
-                                          'Rp800.000',
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w600
-                                          ),
+                                        TotalExpenseStream(
+                                            startDate: DateTime(exactlyNow.year, exactlyNow.month, 1).toIso8601String(),
+                                            endDate: DateTime(exactlyNow.year, exactlyNow.month, exactlyNow.day+1).toIso8601String(),
+                                            userId: user.uid
                                         ),
                                       ],
                                     )
