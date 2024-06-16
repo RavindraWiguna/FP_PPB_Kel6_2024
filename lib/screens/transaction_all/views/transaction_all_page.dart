@@ -8,8 +8,10 @@ class TransactionAll extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         title: Text('All Transactions'),
+        backgroundColor: Theme.of(context).colorScheme.background,
       ),
       body: Column(
           children: <Widget>[
