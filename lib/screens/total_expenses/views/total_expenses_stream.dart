@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expense_repository/expense_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
 
 class TotalExpenseStream extends StatelessWidget {
   final String userId;
@@ -13,6 +15,11 @@ class TotalExpenseStream extends StatelessWidget {
     required this.endDate,
     required this.userId,
   });
+
+  String formatCurrency(int amount) {
+    final formatter = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+    return formatter.format(amount);
+  }
 
   final FireStoreExpenseService fireStoreExpenseService = FireStoreExpenseService();
 
@@ -47,7 +54,7 @@ class TotalExpenseStream extends StatelessWidget {
           }
           // can be customized, say used in multiple place, for now same in mainscreen
           return Text(
-            'Rp$totalExpenses',
+            formatCurrency(totalExpenses),
             style: TextStyle(
                 fontSize: 14,
                 color: Colors.white,

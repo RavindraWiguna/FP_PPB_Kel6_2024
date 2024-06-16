@@ -65,6 +65,7 @@ class Wallet {
     Map<String, Object?> myJson = {
       WalletFields.userId: userId,
       WalletFields.currentBalance: currentBalance,
+      WalletFields.totalIncome: totalIncome,
       WalletFields.created: created.toIso8601String(),
       WalletFields.lastModified: lastModified.toIso8601String(),
     };
@@ -78,7 +79,7 @@ class Wallet {
     userId: json[WalletFields.userId] as String,
     walletId: json[WalletFields.walletId] as String,
     currentBalance: json[WalletFields.currentBalance] as int,
-    totalIncome: json[WalletFields.currentBalance] as int,
+    totalIncome: json[WalletFields.totalIncome] as int,
     created: DateTime.parse(json[WalletFields.created] as String),
     lastModified: DateTime.parse(json[WalletFields.lastModified] as String),
   );

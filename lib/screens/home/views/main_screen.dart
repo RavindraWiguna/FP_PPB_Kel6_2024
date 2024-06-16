@@ -32,6 +32,11 @@ class _MainScreenState extends State<MainScreen> {
     debugPrint('SIGNOUT');
   }
 
+  String formatCurrency(int amount) {
+    final formatter = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+    return formatter.format(amount);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -147,7 +152,7 @@ class _MainScreenState extends State<MainScreen> {
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            'Rp${wallet.currentBalance}',
+                            formatCurrency(wallet.currentBalance),
                             style: const TextStyle(
                                 fontSize: 36,
                                 color: Colors.white,
@@ -189,11 +194,11 @@ class _MainScreenState extends State<MainScreen> {
                                           ),
                                         ),
                                         Text(
-                                          'Rp${wallet.totalIncome}',
+                                          formatCurrency(wallet.totalIncome),
                                           style: const TextStyle(
                                               fontSize: 14,
                                               color: Colors.white,
-                                              fontWeight: FontWeight.w600
+                                              fontWeight: FontWeight.bold
                                           ),
                                         ),
                                       ],
