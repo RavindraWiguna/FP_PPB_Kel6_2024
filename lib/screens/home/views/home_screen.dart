@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fpppb2024/screens/add_expenses/views/add_expense.dart';
+import 'package:fpppb2024/screens/CU_expenses_income/views/expense_income_page.dart';
 import 'package:fpppb2024/screens/home/views/main_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -38,7 +38,7 @@ class HomeScreen extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (BuildContext context) => AddEditExpense()
+              builder: (BuildContext context) => ExpenseIncomePage()
             )
           );
         },

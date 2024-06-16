@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_repository/src/models/expense.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:fpppb2024/screens/add_expenses/views/add_expense.dart';
+import 'package:fpppb2024/screens/CU_expenses_income/views/edit_expense_page.dart';
 import 'package:intl/intl.dart';
 import 'package:expense_repository/src/services/firebase_expense_repo.dart';
 
@@ -213,7 +213,7 @@ class ExpenseDetail extends StatelessWidget {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (BuildContext context) => AddEditExpense(expense: curExpense, docID: docId,)
+                            builder: (BuildContext context) => EditExpensePage(expense: curExpense, docID: docId,)
                         )
                     );
                   },
