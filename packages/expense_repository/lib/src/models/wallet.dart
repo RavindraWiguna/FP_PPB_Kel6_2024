@@ -79,7 +79,8 @@ class Wallet {
     userId: json[WalletFields.userId] as String,
     walletId: json[WalletFields.walletId] as String,
     currentBalance: json[WalletFields.currentBalance] as int,
-    totalIncome: int.parse(json[WalletFields.totalIncome] ?? "0"),
+    totalIncome: json[WalletFields.totalIncome] as int,
+    // totalIncome: int.parse(json[WalletFields.totalIncome] ?? "0"),
     created: DateTime.parse(json[WalletFields.created] as String),
     lastModified: DateTime.parse(json[WalletFields.lastModified] as String),
   );

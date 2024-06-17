@@ -5,6 +5,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:expense_repository/src/services/firebase_income_repo.dart';
 import 'package:expense_repository/src/models/income.dart';
+import 'package:expense_repository/src/models/wallet.dart';
+import 'package:expense_repository/src/services/firebase_wallet_repo.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AddEditIncome extends StatefulWidget {
@@ -43,17 +45,43 @@ class _AddEditIncomeState extends State<AddEditIncome> {
   }
 
   void createIncome() async{
-    Income incomeLocal = Income(
-      userId: user.uid,
-      // expenseId: '' , // will be returned
-      // category: categoryController.text,
-      description: descriptionController.text,
-      amount: int.parse(expenseController.text),
-      date: DateFormat('dd/MM/yyyy').parse(dateController.text),
-      created: DateTime.now(),
-      lastModified: DateTime.now(),
-    );
-    fireStoreIncomeService.addIncome(incomeLocal);
+    try {
+      // Create Income object
+      Income incomeLocal = Income(
+        userId: user.uid,
+        description: descriptionController.text,
+        amount: int.parse(expenseController.text),
+        date: DateFormat('dd/MM/yyyy').parse(dateController.text),
+        created: DateTime.now(),
+        lastModified: DateTime.now(),
+      );
+
+      // Add income to Firestore
+      await fireStoreIncomeService.addIncome(incomeLocal);
+
+      // Fetch the current wallet
+      FireStoreWalletService walletService = FireStoreWalletService();
+      String walletDocId = await walletService.getWalletDocIdByUserId(user.uid);
+      Wallet currentWallet = await walletService.getWalletByUserId(user.uid);
+
+      // Update wallet's current balance and total income
+      Wallet updatedWallet = currentWallet.copy(
+        currentBalance: currentWallet.currentBalance + incomeLocal.amount,
+        totalIncome: currentWallet.totalIncome + incomeLocal.amount,
+        lastModified: DateTime.now(),
+      );
+
+      // Save the updated wallet back to Firestore
+      await walletService.updateWallet(walletDocId, updatedWallet);
+
+      // Close the screen
+      Navigator.pop(context);
+    } catch (e) {
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to add income: $e')),
+      );
+    }
   }
 
   void editIncome() async{

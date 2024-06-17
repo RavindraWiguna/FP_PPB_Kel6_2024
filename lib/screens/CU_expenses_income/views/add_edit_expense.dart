@@ -5,7 +5,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:expense_repository/src/services/firebase_expense_repo.dart';
 import 'package:expense_repository/src/models/expense.dart';
+import 'package:expense_repository/src/models/wallet.dart';
+import 'package:expense_repository/src/services/firebase_wallet_repo.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddEditExpense extends StatefulWidget {
   final Expense? expense;
@@ -43,17 +46,48 @@ class _AddEditExpenseState extends State<AddEditExpense> {
   }
 
   void createExpense() async{
-    Expense expenseLocal = Expense(
-      userId: user.uid,
-      expenseId: '' , // will be returned
-      category: categoryController.text,
-      description: descriptionController.text,
-      amount: int.parse(expenseController.text),
-      date: DateFormat('dd/MM/yyyy').parse(dateController.text),
-      created: DateTime.now(),
-      lastModified: DateTime.now(),
-    );
-    fireStoreExpenseService.addExpense(expenseLocal);
+    try {
+      // Create a new document reference with an auto-generated ID
+      DocumentReference newDocRef = fireStoreExpenseService.expenseCollection.doc();
+      String generatedId = newDocRef.id;
+      // Create Expense object
+      Expense expenseLocal = Expense(
+        userId: user.uid,
+        expenseId: generatedId, // will be returned
+        category: categoryController.text,
+        description: descriptionController.text,
+        amount: int.parse(expenseController.text),
+        date: DateFormat('dd/MM/yyyy').parse(dateController.text),
+        created: DateTime.now(),
+        lastModified: DateTime.now(),
+      );
+
+      // Add expense to Firestore
+      await fireStoreExpenseService.addExpense(expenseLocal);
+
+      // Fetch the wallet document ID
+      FireStoreWalletService walletService = FireStoreWalletService();
+      String walletDocId = await walletService.getWalletDocIdByUserId(user.uid);
+
+      Wallet currentWallet = await walletService.getWalletByUserId(user.uid);
+
+      // Update wallet's current balance
+      Wallet updatedWallet = currentWallet.copy(
+        currentBalance: currentWallet.currentBalance - expenseLocal.amount,
+        lastModified: DateTime.now(),
+      );
+
+      // Save the updated wallet back to Firestore
+      await walletService.updateWallet(walletDocId, updatedWallet);
+
+      // Close the screen
+      // Navigator.pop(context);
+    } catch (e) {
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to add expense: $e')),
+      );
+    }
   }
 
   void editExpense() async{

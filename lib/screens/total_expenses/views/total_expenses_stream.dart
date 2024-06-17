@@ -41,8 +41,15 @@ class TotalExpenseStream extends StatelessWidget {
           );
         }
         else if(!snapshot.hasData || snapshot.data!.docs.isEmpty){
-          return Center(
-              child: Text('No expenses found on $startDate until $endDate')
+          return const Center(
+              child: Text(
+                'Rp 0',
+                style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold
+                ),
+              )
           );
         }
         else{

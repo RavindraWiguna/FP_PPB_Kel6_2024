@@ -21,9 +21,27 @@ class FireStoreWalletService{
     return walletStream;
   }
 
+  Future<Wallet> getWalletByUserId(String userId) async {
+    QuerySnapshot query = await walletCollection.where(WalletFields.userId, isEqualTo: userId).get();
+    if (query.docs.isNotEmpty) {
+      return Wallet.fromDynamic(query.docs.first.data());
+    } else {
+      throw Exception("Wallet not found");
+    }
+  }
+
+  Future<String> getWalletDocIdByUserId(String userId) async {
+    QuerySnapshot querySnapshot = await walletCollection.where('userId', isEqualTo: userId).limit(1).get();
+    if (querySnapshot.docs.isNotEmpty) {
+      return querySnapshot.docs.first.id;
+    } else {
+      throw Exception('Wallet document not found for user ID: $userId');
+    }
+  }
+
   // update
-  Future<void> updateWallet(Wallet walletUpdated){
-    return walletCollection.doc(walletUpdated.walletId).update(walletUpdated.toJson(false));
+  Future<void> updateWallet(String docID, Wallet walletUpdated){
+    return walletCollection.doc(docID).update(walletUpdated.toJson(false));
   }
 
   // delete
