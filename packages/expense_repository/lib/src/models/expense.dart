@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class ExpenseFields {
   static final List<String> values = [
     /// Add all fields
@@ -75,6 +77,20 @@ class Expense {
     created: DateTime.now(),
     lastModified: DateTime.now()
   );
+
+  // Convert a Firestore document to an Expense object
+  factory Expense.fromJson(Map<String, dynamic> json) {
+    return Expense(
+      userId: json['userId'],
+      expenseId: json['expenseId'],
+      category: json['category'],
+      description: json['description'],
+      amount: json['amount'],
+      date: DateTime.parse(json['date']),
+      created: DateTime.parse(json['created']),
+      lastModified: DateTime.parse(json['lastModified']),
+    );
+  }
 
   // so all is string
   Map<String, Object?> toJson(bool includeId){

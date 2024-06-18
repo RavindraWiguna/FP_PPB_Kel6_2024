@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class IncomeFields {
   static final List<String> values = [
     /// Add all fields
@@ -75,6 +77,17 @@ class Income {
       created: DateTime.now(),
       lastModified: DateTime.now()
   );
+
+  factory Income.fromJson(Map<String, dynamic> json) {
+    return Income(
+      userId: json['userId'],
+      description: json['description'],
+      amount: json['amount'],
+      date: DateTime.parse(json['date']),
+      created: DateTime.parse(json['created']),
+      lastModified: DateTime.parse(json['LastModified']),
+    );
+  }
 
   // so all is string
   Map<String, Object?> toJson(){

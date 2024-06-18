@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class WalletFields {
   static final List<String> values = [
     /// Add all fields
@@ -73,6 +75,17 @@ class Wallet {
       myJson[WalletFields.walletId] = walletId;
     }
     return myJson;
+  }
+
+  factory Wallet.fromJson(Map<String, dynamic> json) {
+    return Wallet(
+      userId: json['userId'],
+      currentBalance: json['currentBalance'],
+      totalIncome: json['totalIncome'],
+      walletId: json['walletId'],
+      created: DateTime.parse(json['created']),
+      lastModified: DateTime.parse(json['lastModified']),
+    );
   }
 
   static Wallet fromDynamic(dynamic json) => Wallet(

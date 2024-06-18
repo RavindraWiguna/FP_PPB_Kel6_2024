@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:expense_repository/src/services/firebase_wallet_repo.dart';
+import 'package:expense_repository/src/models/wallet.dart';
 import '../models/expense.dart';
 
 class FireStoreExpenseService{
@@ -43,8 +45,46 @@ class FireStoreExpenseService{
   }
 
   // delete
-  Future<void> deleteExpense(String docID){
-    return expenseCollection.doc(docID).delete();
+  // Future<void> deleteExpense(String docID){
+  //   return expenseCollection.doc(docID).delete();
+  // }
+  Future<void> deleteExpense(String docID) async {
+    try {
+      // Fetch the expense document
+      DocumentSnapshot expenseDoc = await expenseCollection.doc(docID).get();
+      if (!expenseDoc.exists) {
+        throw Exception("Expense not found");
+      }
+
+      // Convert document to Expense object
+      Expense expenseToDelete = Expense.fromJson(expenseDoc.data()! as Map<String, dynamic>);
+
+      // Fetch the wallet document ID
+      FireStoreWalletService walletService = FireStoreWalletService();
+      String walletDocId = await walletService.getWalletDocIdByUserId(expenseToDelete.userId);
+
+      // Fetch the current wallet using the fetched doc ID
+      Wallet currentWallet = await walletService.walletCollection.doc(walletDocId).get()
+          .then((doc) => Wallet.fromJson(doc.data()! as Map<String, dynamic>));
+
+      // Calculate the updated balance by adding the expense amount back to the current balance
+      int updatedBalance = currentWallet.currentBalance + expenseToDelete.amount;
+
+      // Update wallet's current balance
+      Wallet updatedWallet = currentWallet.copy(
+        currentBalance: updatedBalance,
+        lastModified: DateTime.now(),
+      );
+
+      // Save the updated wallet back to Firestore
+      await walletService.updateWallet(walletDocId, updatedWallet);
+
+      // Delete the expense document
+      await expenseCollection.doc(docID).delete();
+    } catch (e) {
+      // Handle errors appropriately
+      print('Failed to delete expense: $e');
+    }
   }
 
   Stream<QuerySnapshot> getExpenseFromDateRange(String startDate, String endDate, String userId) {
