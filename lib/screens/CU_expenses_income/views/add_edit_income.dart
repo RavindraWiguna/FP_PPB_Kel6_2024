@@ -84,14 +84,58 @@ class _AddEditIncomeState extends State<AddEditIncome> {
     }
   }
 
-  void editIncome() async{
-    widget.income?.amount = int.parse(expenseController.text);
-    // widget.income?.category = categoryController.text;
-    widget.income?.description = descriptionController.text;
-    widget.income?.date = DateFormat('dd/MM/yyyy').parse(dateController.text);
-    // fireStoreExpenseService.addExpense(expenseLocal);
-    fireStoreIncomeService.updateIncome(widget.income!, widget.docID!);
+  void editIncome() async {
+    try {
+      // Fetch the current wallet document ID
+      FireStoreWalletService walletService = FireStoreWalletService();
+      String walletDocId = await walletService.getWalletDocIdByUserId(widget.income!.userId);
+
+      // Fetch the current wallet using the fetched doc ID
+      Wallet currentWallet = await walletService.getWalletByUserId(user.uid);
+
+      // Calculate the updated balance
+      int oldAmount = widget.income!.amount;
+      int newAmount = int.parse(expenseController.text);
+
+      int updatedBalance = currentWallet.currentBalance - oldAmount + newAmount;
+      int totalIncome = currentWallet.totalIncome - oldAmount + newAmount;
+      // Update the income object with new values
+      widget.income?.amount = newAmount;
+      widget.income?.description = descriptionController.text;
+      widget.income?.date = DateFormat('dd/MM/yyyy').parse(dateController.text);
+
+      // Update the income in Firestore
+      await fireStoreIncomeService.updateIncome(widget.income!, widget.docID!);
+
+      // Update wallet's current balance
+      Wallet updatedWallet = currentWallet.copy(
+        currentBalance: updatedBalance,
+        totalIncome: totalIncome,
+        lastModified: DateTime.now(),
+      );
+
+      // Save the updated wallet back to Firestore
+      await walletService.updateWallet(walletDocId, updatedWallet);
+
+      // Close the screen
+      Navigator.pop(context);
+    } catch (e) {
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update income: $e')),
+      );
+    }
   }
+
+
+  // void editIncome() async{
+  //   widget.income?.amount = int.parse(expenseController.text);
+  //   // widget.income?.category = categoryController.text;
+  //   widget.income?.description = descriptionController.text;
+  //   widget.income?.date = DateFormat('dd/MM/yyyy').parse(dateController.text);
+  //   // fireStoreExpenseService.addExpense(expenseLocal);
+  //   fireStoreIncomeService.updateIncome(widget.income!, widget.docID!);
+  // }
 
   @override
   Widget build(BuildContext context) {

@@ -45,15 +45,16 @@ class _AddEditExpenseState extends State<AddEditExpense> {
     descriptionController.text = widget.expense?.description ?? "";
   }
 
-  void createExpense() async{
+  void createExpense() async {
     try {
-      // Create a new document reference with an auto-generated ID
+      // Create a new document reference with an auto-generated ID for the expense
       DocumentReference newDocRef = fireStoreExpenseService.expenseCollection.doc();
       String generatedId = newDocRef.id;
+
       // Create Expense object
       Expense expenseLocal = Expense(
         userId: user.uid,
-        expenseId: generatedId, // will be returned
+        expenseId: generatedId,
         category: categoryController.text,
         description: descriptionController.text,
         amount: int.parse(expenseController.text),
@@ -62,14 +63,38 @@ class _AddEditExpenseState extends State<AddEditExpense> {
         lastModified: DateTime.now(),
       );
 
-      // Add expense to Firestore
-      await fireStoreExpenseService.addExpense(expenseLocal);
-
       // Fetch the wallet document ID
       FireStoreWalletService walletService = FireStoreWalletService();
       String walletDocId = await walletService.getWalletDocIdByUserId(user.uid);
 
+      // Fetch the current wallet using the fetched doc ID
       Wallet currentWallet = await walletService.getWalletByUserId(user.uid);
+
+      // Check if the wallet has sufficient balance
+      if (currentWallet.currentBalance < expenseLocal.amount) {
+        // Show alert for insufficient balance
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Insufficient Balance'),
+              content: Text('You do not have enough balance to create this expense.'),
+              actions: [
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        return; // Abort the expense creation
+      }
+
+      // Add expense to Firestore
+      await fireStoreExpenseService.addExpense(expenseLocal);
 
       // Update wallet's current balance
       Wallet updatedWallet = currentWallet.copy(
@@ -81,7 +106,7 @@ class _AddEditExpenseState extends State<AddEditExpense> {
       await walletService.updateWallet(walletDocId, updatedWallet);
 
       // Close the screen
-      // Navigator.pop(context);
+      Navigator.pop(context);
     } catch (e) {
       // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
@@ -90,14 +115,81 @@ class _AddEditExpenseState extends State<AddEditExpense> {
     }
   }
 
-  void editExpense() async{
-    widget.expense?.amount = int.parse(expenseController.text);
-    widget.expense?.category = categoryController.text;
-    widget.expense?.description = descriptionController.text;
-    widget.expense?.date = DateFormat('dd/MM/yyyy').parse(dateController.text);
-    // fireStoreExpenseService.addExpense(expenseLocal);
-    fireStoreExpenseService.updateExpense(widget.expense!, widget.docID!);
+  // void editExpense() async{
+  //   widget.expense?.amount = int.parse(expenseController.text);
+  //   widget.expense?.category = categoryController.text;
+  //   widget.expense?.description = descriptionController.text;
+  //   widget.expense?.date = DateFormat('dd/MM/yyyy').parse(dateController.text);
+  //   // fireStoreExpenseService.addExpense(expenseLocal);
+  //   fireStoreExpenseService.updateExpense(widget.expense!, widget.docID!);
+  // }
+
+  void editExpense() async {
+    try {
+      // Fetch the current wallet document ID
+      FireStoreWalletService walletService = FireStoreWalletService();
+      String walletDocId = await walletService.getWalletDocIdByUserId(widget.expense!.userId);
+
+      // Fetch the current wallet using the fetched doc ID
+      Wallet currentWallet = await walletService.getWalletByUserId(user.uid);
+
+      // Calculate the updated balance
+      int oldAmount = widget.expense!.amount;
+      int newAmount = int.parse(expenseController.text);
+
+      int updatedBalance = currentWallet.currentBalance + oldAmount - newAmount;
+
+      // Check if the wallet has sufficient balance after update
+      if (updatedBalance < 0) {
+        // Show alert for insufficient balance
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Insufficient Balance'),
+              content: Text('You do not have enough balance to update this expense.'),
+              actions: [
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        return; // Abort the expense update
+      }
+
+      // Update the expense object with new values
+      widget.expense?.amount = newAmount;
+      widget.expense?.category = categoryController.text;
+      widget.expense?.description = descriptionController.text;
+      widget.expense?.date = DateFormat('dd/MM/yyyy').parse(dateController.text);
+
+      // Update the expense in Firestore
+      await fireStoreExpenseService.updateExpense(widget.expense!, widget.docID!);
+
+      // Update wallet's current balance
+      Wallet updatedWallet = currentWallet.copy(
+        currentBalance: updatedBalance,
+        lastModified: DateTime.now(),
+      );
+
+      // Save the updated wallet back to Firestore
+      await walletService.updateWallet(walletDocId, updatedWallet);
+
+      // Close the screen
+      Navigator.pop(context);
+    } catch (e) {
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update expense: $e')),
+      );
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
