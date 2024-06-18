@@ -11,6 +11,11 @@ class TransactionStream extends StatelessWidget {
   TransactionStream({super.key, required this.totalStream, required this.userUID});
 
   final FireStoreExpenseService fireStoreExpenseService = FireStoreExpenseService();
+  String formatCurrency(int amount) {
+    final formatter = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+    return formatter.format(amount);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +68,7 @@ class TransactionStream extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                                'Rp'+curExpense.amount.toString(), // for now,
+                                formatCurrency(curExpense.amount), // for now,
                                 style: TextStyle(
                                     fontSize: 14,
                                     color: Theme.of(context).colorScheme.onBackground,

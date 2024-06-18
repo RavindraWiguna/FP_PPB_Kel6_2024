@@ -175,8 +175,8 @@ class _AddEditIncomeState extends State<AddEditIncome> {
                   DateTime? newDate = await showDatePicker(
                       context: context,
                       initialDate: selectedDate,
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(Duration(days: 365))
+                      firstDate: DateTime.now().add(Duration(days: -365)),
+                      lastDate: DateTime.now()
                   );
                   if(newDate != null){
                     setState(() {

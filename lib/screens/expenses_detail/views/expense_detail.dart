@@ -18,6 +18,11 @@ class ExpenseDetail extends StatelessWidget {
     super.key
   });
 
+  String formatCurrency(int amount) {
+    final formatter = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+    return formatter.format(amount);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -88,7 +93,8 @@ class ExpenseDetail extends StatelessWidget {
 
                 // jumlah
                 Text(
-                  'Rp'+curExpense.amount.toString(),
+
+                  formatCurrency(curExpense.amount),
                   style: TextStyle(
                     fontSize: 40
                   ),
